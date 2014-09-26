@@ -1,6 +1,7 @@
 require 'pry'
 
 power_status = false
+
 def power_button
   puts "Power On/Off?"
   power = gets.chomp.downcase
@@ -38,7 +39,47 @@ def perform_calculation(operand_1, operand_2, operator)
     operator = gets.chomp
     perform_calculation(operand_1, operand_2, operator)
   end
-  puts result
+end
+
+def initial_action(input_array, intial_result)
+  puts "=>number:"
+  num1 = gets.chomp
+  int_check(input_array, num1)
+
+  puts "=>Operator(+, -, *, /):"
+  operation = gets.chomp
+
+  puts "=>number:"
+  num2 = gets.chomp
+  int_check(input_array, num2)
+
+  initial_result = perform_calculation(input_array[0], input_array[1], operation)
+end
+
+def next_action(data, running_total)
+  puts "=>(+, -, *, /)|clear|exit:"
+  operation = gets.chomp
+  if operation == "clear"
+    data = []
+    running_total = 0
+    running_total = initial_action(data, running_total)
+    puts "result=> #{running_total}"
+    next_action(data, running_total)
+  elsif operation == "exit"
+    power_button
+  elsif (operation == "+") || (operation == "-") || (operation == "*") || (operation == "/")
+    puts "=>number:"
+    value = gets.chomp
+    value = Integer(value) rescue nil
+    if value != nil
+      running_total = perform_calculation(running_total, value, operation)
+      puts "result=> #{running_total}"
+      next_action(value, running_total)
+    else
+      puts "Invalid Entry, please try again"
+      next_action(data, running_total)
+    end
+  end
 end
 
 begin
@@ -66,20 +107,12 @@ begin
   input = []
   result = 0
 
-  puts "Enter numbers to keep going, 'c' to clear or 'exit' to quit."
+  result = initial_action(input, result)
 
-  puts "=>Num:"
-  num1 = gets.chomp
-  int_check(input, num1)
+  puts "result=> #{result}"
 
-  puts "=>Operator(+, -, *, /):"
-  operation = gets.chomp
+  next_action(input, result)
 
-  puts "=>Num:"
-  num2 = gets.chomp
-  int_check(input, num2)
-
-  perform_calculation(input[0], input[1], operation)
 
 end while power_status
 
